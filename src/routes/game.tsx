@@ -1,3 +1,5 @@
+import { Box } from "@mui/material";
+
 export default function Game() {
-  return <span>Game</span>
+  return <Box>Game</Box>
 }
