@@ -13,13 +13,13 @@ export default function Header() {
   const matches480 = useMediaQuery('(min-width:480px)');
 
   return (
-    <AppBar>
+    <AppBar position="static">
       <Toolbar>
         <Typography variant="h4" sx={{ mr: 'auto' }}>
           Сапёр
         </Typography>
         {matchGamePath ? (
-          <IconButton color="inherit" onClick={() => navigate(AppRoutes.Leaderboard)}>
+          <IconButton color="inherit" onClick={() => navigate(AppRoutes.Leaders)}>
             <Leaderboard sx={{ mr: '5px' }} />
             {matches480 && ('Рекорды')}
           </IconButton>

@@ -3,7 +3,7 @@ import { AppRoutes } from '../types/routes';
 import Root from 'routes/root';
 import ErrorPage from 'components/common/errorPage';
 import Game from 'routes/game';
-import Leaderboard from 'routes/leaderboard';
+import Leaderboard from 'routes/leaders';
 export default function AppRouter() {
   const router = createBrowserRouter([
     {
@@ -16,7 +16,7 @@ export default function AppRouter() {
           element: <Game />,
         },
         {
-          path: AppRoutes.Leaderboard,
+          path: AppRoutes.Leaders,
           element: <Leaderboard />,
         },
       ]

@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import Header from 'components/header/header';
 import Footer from 'components/footer/footer';
 import ErrorBoundary from 'components/common/errorBoundary';
+import { Container } from '@mui/material';
 
 export default function Root() {
   return (
@@ -17,7 +18,9 @@ export default function Root() {
         <Header />
       </ErrorBoundary>
         <ErrorBoundary>
-          <Outlet />
+          <Container>
+            <Outlet />
+          </Container>
         </ErrorBoundary>
       <ErrorBoundary>
         <Footer />
