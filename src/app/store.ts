@@ -1,7 +1,9 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
+import containerReducer from 'components/game/container/containerSlice';
 
 export const store = configureStore({
   reducer: {
+    container: containerReducer,
   },
 });
 

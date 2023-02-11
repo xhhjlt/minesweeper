@@ -1,5 +1,5 @@
-import { Box } from "@mui/material";
+import GameContainer from "components/game/container/gameContainer";
 
 export default function Game() {
-  return <Box>Game</Box>
+  return <GameContainer />
 }
