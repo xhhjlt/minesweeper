@@ -2,7 +2,7 @@ import { ArrowBack, Fullscreen, FullscreenExit, Settings, VolumeOff, VolumeUp } 
 import { ButtonGroup, IconButton, Paper, Stack } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import { useRef, useState } from "react";
-import { isGameActive as gameActive, isGameOpened as gameOpened, mute, isMuted as muted, openGame, openSettings, startGame, unmute } from "./containerSlice";
+import { isGameActive as gameActive, isGameOpened as gameOpened, mute, isMuted as muted, openGame, openSettings, unmute } from "./containerSlice";
 import Minesweeper from "../minesweeper/minesweeper";
 import GameSettings from "../settings/gameSettings";
 
