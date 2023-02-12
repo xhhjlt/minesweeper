@@ -72,15 +72,30 @@ const slice = createSlice({
       state.field = filled;
     },
     openCell: (state, { payload: { x, y }}: PayloadAction<{ x: number, y: number }>) => {
-      state.field[y][x].opened = true;
-      state.field[y][x].flag = '';
+      const open = (baseX: number, baseY: number) => {
+        if (state.field[baseY][baseX].opened) return;
+        state.field[baseY][baseX].opened = true;
+        state.field[baseY][baseX].flag = '';
+        if (state.field[baseY][baseX].value !== 0) return;
+        for (let i = -1; i <= 1; i++) {
+          for (let j = -1; j <= 1; j++) {
+            const x = baseX + i;
+            const y = baseY + j;
+            if (x >=0 && x < state.field[0].length 
+              && y >=0 && y < state.field.length) {
+                open(x, y);
+            }
+          }
+        }
+      };
+      open(x,y);
     },
     openAround: (state, { payload: { x, y }}: PayloadAction<{ x: number, y: number }>) => {
       state.field[y][x].opened = true;
       state.field[y][x].flag = '';
     },
     changeFlag: (state, { payload: { x, y }}: PayloadAction<{ x: number, y: number }>) => {
-      const flag = state.field[x][y].flag;
+      const flag = state.field[y][x].flag;
       if (flag === '') {
         state.field[y][x].flag = '🚩';
         state.flags = state.flags + 1;

@@ -38,7 +38,7 @@ export default function Minesweeper() {
 
   const menuHandler = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, cell: Cell) => {
     e.nativeEvent.preventDefault();
-    if (!isActive) return;
+    if (!isActive || cell.opened) return;
     dispatch(changeFlag({ ...cell }));
   }
 
