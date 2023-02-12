@@ -1,6 +1,6 @@
 import { Box, Typography, IconButton, Stack, useTheme } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
-import { Cell, changeFlag, flagsNumber, gameField, minesNumber, openAround, openCell } from "./minesweeperSlice";
+import { Cell, changeFlag, fillField, flagsNumber, gameField, minesNumber, openAround, openCell } from "./minesweeperSlice";
 import { Mood } from "@mui/icons-material";
 import { isGameActive } from "../container/containerSlice";
 import { numberColor } from "./constants";
@@ -14,6 +14,8 @@ export default function Minesweeper() {
   const isActive = useAppSelector(isGameActive);
   const dispatch = useAppDispatch();
   const [time, setTime] = useState(0);
+  const [firstClick, setFirstClick] = useState(true);
+  const [isWinner, setIsWinner] = useState(false);
 
   useEffect(() => {
     setTimeout(() => {
@@ -24,6 +26,10 @@ export default function Minesweeper() {
   const clickHandler = (e: React.PointerEvent<HTMLDivElement>, cell: Cell) => {
     if (!isActive) return;
     if (e.button === 0) {
+      if (firstClick) {
+        setFirstClick(false);
+        dispatch(fillField({ ...cell }));
+      }
       dispatch(openCell({ ...cell }));
     } else if (e.button === 1) {
       dispatch(openAround({ ...cell }));
@@ -61,7 +67,7 @@ export default function Minesweeper() {
               >
                 {cell.opened ? (
                 <Typography textAlign="center" fontWeight={1000} color={numberColor[cell.value]} sx={{userSelect: "none"}}>
-                  {cell.value}
+                  {cell.value < 9 ? cell.value : '💣'}
                 </Typography>
                 ) : (
                 <Typography textAlign="center" fontWeight={1000} color="GrayText" sx={{userSelect: "none"}}>
