@@ -32,8 +32,8 @@ export default function GameContainer() {
   };
 
   return (
-    <Paper elevation={10} sx={{m: 1, p: 1, minWidth: 500, mx: 'auto'}} ref={conteiner}>
-      <Stack>
+    <Paper elevation={10} sx={{pb: '5px', height: '100%'}} ref={conteiner}>
+      <Stack height='100%'>
         <ButtonGroup sx={{ml: 'auto'}}>
           {isGameOpened && <IconButton onClick={() => dispatch(openSettings())}>
             <Settings />
@@ -48,7 +48,9 @@ export default function GameContainer() {
             {isFullscreen ? <FullscreenExit /> : <Fullscreen />}
           </IconButton>
         </ButtonGroup>
-        {isGameOpened ? <Minesweeper /> : <GameSettings />}
+        <Stack justifyContent='center' height='100%' overflow='auto'>
+          {isGameOpened ? <Minesweeper /> : <GameSettings />}
+        </Stack>
       </Stack>
     </Paper>
   );

@@ -18,7 +18,7 @@ export default function Root() {
         <Header />
       </ErrorBoundary>
         <ErrorBoundary>
-          <Container>
+          <Container sx={{height: '100%', p: '10px'}}>
             <Outlet />
           </Container>
         </ErrorBoundary>

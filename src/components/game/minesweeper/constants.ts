@@ -1,0 +1,1 @@
+export const numberColor = ['transparent', 'blue', 'green', 'red', 'navy', 'maroon', 'teal', 'black', 'gray'];

@@ -13,7 +13,6 @@ export default function Footer() {
       component="footer"
       sx={{
         p: 1,
-        mt: 'auto',
         backgroundColor:
           theme.palette.mode === 'light' ? theme.palette.grey[400] : theme.palette.grey[900],
       }}

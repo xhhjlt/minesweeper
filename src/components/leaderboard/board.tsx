@@ -1,22 +1,26 @@
 import { Divider, Paper, Stack, Typography } from "@mui/material";
-import { Record } from "./leaderboard";
+import { Record } from "./leaderboardSlice";
 
 interface BoardProps {
-  records: Array<Record>
+  records: Array<Record>,
+  title: string,
 }
 
-export default function Board({ records }: BoardProps) {
+export default function Board({ records, title }: BoardProps) {
+
   return (
-    <Paper elevation={10} sx={{m: 1, p: 1, maxWidth: 500, mx: 'auto'}}>
-      <Typography variant="h4" align="center">Лучшие саперы</Typography>
+    <Stack justifyContent="center" height="100%">
+    <Paper elevation={10} sx={{m: 1, p: 1, mx: 'auto'}}>
+      <Typography variant="h5" align="center" mb="10px">{title}</Typography>
       <Stack divider={<Divider />}>
       {records.map((record, index) => (
         <Stack direction="row" justifyContent="space-between" spacing={1}>
           <Typography>{index + 1}.{record.name} : </Typography>
-          <Typography>{record.time} сек</Typography>
+          <Typography>{(record.time - record.time % 60) / 60} мин {record.time % 60} сек</Typography>
         </Stack>
       ))}
       </Stack>
     </Paper>
+    </Stack>
   )
 }
