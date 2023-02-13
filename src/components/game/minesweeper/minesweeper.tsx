@@ -1,27 +1,38 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Box, Typography, IconButton, Stack, useTheme } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
-import { Cell, changeFlag, fillField, flagsNumber, gameField, minesNumber, openAround, openCell } from "./minesweeperSlice";
-import { Mood } from "@mui/icons-material";
-import { isGameActive } from "../container/containerSlice";
+import { Cell, changeFlag, clearGameStats, difficulty, fillField, flagsNumber, gameField, generateField, isLose, isWin, openAround, openCell } from "./minesweeperSlice";
+import { Mood, MoodBad, SentimentSatisfiedAlt } from "@mui/icons-material";
+import { finishGame, isGameActive, startGame } from "../container/containerSlice";
 import { numberColor } from "./constants";
 import { useEffect, useState } from "react";
 
 export default function Minesweeper() {
   const theme = useTheme();
   const field = useAppSelector(gameField);
-  const mines = useAppSelector(minesNumber);
+  const currentDifficulty = useAppSelector(difficulty)
   const flags = useAppSelector(flagsNumber);
   const isActive = useAppSelector(isGameActive);
+  const lose = useAppSelector(isLose);
+  const win = useAppSelector(isWin);
   const dispatch = useAppDispatch();
   const [time, setTime] = useState(0);
+  const [startTime, setStartTime] = useState(Date.now());
   const [firstClick, setFirstClick] = useState(true);
-  const [isWinner, setIsWinner] = useState(false);
 
   useEffect(() => {
     setTimeout(() => {
-      setTime((t) => t + 1);
+      if (isActive) setTime(Math.trunc((Date.now() - startTime)/1000));
     }, 1000);
-  }, [time]);
+  }, [time, isActive, startTime]);
+
+  useEffect(() => {
+    if (lose) dispatch(finishGame());
+  }, [lose])
+
+  useEffect(() => {
+    if (win) dispatch(finishGame());
+  }, [win])
 
   const clickHandler = (e: React.PointerEvent<HTMLDivElement>, cell: Cell) => {
     if (!isActive) return;
@@ -36,6 +47,15 @@ export default function Minesweeper() {
     }
   };
 
+  const restart = () => {
+    setTime(0);
+    setStartTime(Date.now());
+    dispatch(clearGameStats())
+    dispatch(generateField(currentDifficulty));
+    setFirstClick(true);
+    dispatch(startGame());
+  };
+
   const menuHandler = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, cell: Cell) => {
     e.nativeEvent.preventDefault();
     if (!isActive || cell.opened) return;
@@ -45,11 +65,11 @@ export default function Minesweeper() {
   return (
     <Box m="auto">
       <Stack direction="row" justifyContent="space-evenly" alignItems="center" maxWidth="100vw" m="auto">
-        <Typography variant="h6">{mines - flags}</Typography>
-        <IconButton>
-          <Mood />
+        <Typography textAlign="left" minWidth={35} variant="h6">{currentDifficulty.mines - flags}</Typography>
+        <IconButton onClick={restart}>
+          {win ? <Mood color="success" /> : lose ? <MoodBad color="error" /> : <SentimentSatisfiedAlt color="primary" />}
         </IconButton>
-        <Typography variant="h6">{time}</Typography>
+        <Typography textAlign="right" minWidth={35} variant="h6">{time}</Typography>
       </Stack>
       <Stack border="grey solid 1px">
         {field.map((row, i) => (
@@ -66,7 +86,7 @@ export default function Minesweeper() {
                   }}
               >
                 {cell.opened ? (
-                <Typography textAlign="center" fontWeight={1000} color={numberColor[cell.value]} sx={{userSelect: "none"}}>
+                <Typography textAlign="center" fontWeight={1000} bgcolor={cell.value === 9 ? 'red' : 'inherit'} color={numberColor[cell.value]} sx={{userSelect: "none"}}>
                   {cell.value < 9 ? cell.value : '💣'}
                 </Typography>
                 ) : (

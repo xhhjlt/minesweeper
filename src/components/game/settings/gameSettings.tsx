@@ -2,7 +2,7 @@ import { Box, Button, FormControl, FormControlLabel, Radio, RadioGroup, Stack, T
 import { useAppDispatch } from "app/hooks";
 import { openGame, startGame } from "../container/containerSlice";
 import { useState } from "react";
-import { generateField } from "../minesweeper/minesweeperSlice";
+import { generateField, clearGameStats } from "../minesweeper/minesweeperSlice";
 import { DifficultyLevels, levels } from "./constants";
 
 export default function GameSettings() {
@@ -14,6 +14,7 @@ export default function GameSettings() {
 
   const start = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    dispatch(clearGameStats())
     if (difficulty === DifficultyLevels.custom) {
       dispatch(generateField({ height, width, mines }));
     } else {
