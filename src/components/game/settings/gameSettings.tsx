@@ -55,7 +55,7 @@ export default function GameSettings() {
             if (mines > maxMines) setMines(maxMines);
           }} />
           Мины: 
-          <input type="number" value={mines} min={1} max={width*height} onChange={(e) => {
+          <input type="number" value={mines} min={1} max={width * height - 1} onChange={(e) => {
             const value = parseInt(e.target.value);
             setMines(value)
           }} />

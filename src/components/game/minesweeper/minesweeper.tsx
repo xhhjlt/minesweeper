@@ -36,7 +36,7 @@ export default function Minesweeper() {
   useEffect(() => {
     if (lose) {
       dispatch(finishGame());
-      if (!muted) playAudioLose();
+      if (!muted && !win) playAudioLose();
     }
   }, [lose])
 
