@@ -1,13 +1,11 @@
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
 import AppRouter from "app/appRouter";
 import React from "react";
 
 export const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
 
 function App() {
-const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-const [mode, setMode] = React.useState<'light' | 'dark'>(prefersDarkMode ? 'dark' : 'light');
+const [mode, setMode] = React.useState<'light' | 'dark'>('dark');
 const colorMode = React.useMemo(
   () => ({
     toggleColorMode: () => {

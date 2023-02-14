@@ -3,9 +3,10 @@ import { Box, Typography, IconButton, Stack, useTheme, Button, Dialog, DialogAct
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import { Cell, changeFlag, clearGameStats, difficulty, fillField, flagsNumber, gameField, generateField, isLose, isWin, openAround, openCell } from "./minesweeperSlice";
 import { Mood, MoodBad, SentimentSatisfiedAlt } from "@mui/icons-material";
-import { finishGame, isGameActive, startGame } from "../container/containerSlice";
+import { finishGame, isGameActive, isMuted, startGame } from "../container/containerSlice";
 import { numberColor } from "./constants";
 import { useEffect, useState } from "react";
+import useSound from 'use-sound';
 import { addNewRecord, checkTime, isModalOpened } from "components/leaderboard/leaderboardSlice";
 
 export default function Minesweeper() {
@@ -16,12 +17,15 @@ export default function Minesweeper() {
   const isActive = useAppSelector(isGameActive);
   const lose = useAppSelector(isLose);
   const win = useAppSelector(isWin);
+  const muted = useAppSelector(isMuted);
   const dispatch = useAppDispatch();
   const [time, setTime] = useState(0);
   const [startTime, setStartTime] = useState(Date.now());
   const [firstClick, setFirstClick] = useState(true);
   const [playerName, setPlayerName] = useState('');
   const openModal = useAppSelector(isModalOpened);
+  const [playAudioWin] = useSound(`${process.env.PUBLIC_URL}/win.mp3`, { volume: 0.4 });
+  const [playAudioLose] = useSound(`${process.env.PUBLIC_URL}/lose.wav`, { volume: 0.4 });
 
   useEffect(() => {
     setTimeout(() => {
@@ -30,13 +34,17 @@ export default function Minesweeper() {
   }, [time, win, lose, startTime]);
 
   useEffect(() => {
-    if (lose) dispatch(finishGame());
+    if (lose) {
+      dispatch(finishGame());
+      if (!muted) playAudioLose();
+    }
   }, [lose])
 
   useEffect(() => {
     if (win && !lose && !firstClick) {
       dispatch(checkTime({ difficulty: currentDifficulty.difficulty, time }));
       dispatch(finishGame());
+      if (!muted) playAudioWin();
     }
   }, [win, lose])
 

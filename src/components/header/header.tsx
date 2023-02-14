@@ -1,5 +1,5 @@
 import { DarkMode, LightMode, SportsEsports, Leaderboard } from "@mui/icons-material";
-import { AppBar, IconButton, Toolbar, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { AppBar, Avatar, IconButton, Toolbar, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { ColorModeContext } from "App";
 import React from "react";
 import { useMatch, useNavigate } from "react-router-dom";
@@ -15,6 +15,7 @@ export default function Header() {
   return (
     <AppBar position="static">
       <Toolbar>
+        <Avatar alt="logo" src="logo.png" sx={{ width: 50, height: 50, mr: 2 }} />
         <Typography variant="h4" sx={{ mr: 'auto' }}>
           Сапёр
         </Typography>
