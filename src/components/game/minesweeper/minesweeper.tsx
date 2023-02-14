@@ -109,7 +109,7 @@ export default function Minesweeper() {
                 </Typography>
                 ) : (
                 <Typography textAlign="center" fontWeight={1000} color="GrayText" sx={{userSelect: "none"}}>
-                  {(lose && cell.value === 9) ? '💣' : (win && cell.value === 9) ? '🚩' : cell.flag }
+                  {(lose && cell.value === 9 && cell.flag !== '🚩') ? '💣' : (win && cell.value === 9) ? '🚩' : cell.flag }
                 </Typography>)}
               </Box>
             ))}
