@@ -1,6 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "app/store";
 import { shuffle } from "./utils";
+import { DifficultyLevels } from "../settings/constants";
 
 export interface Cell {
   x: number,
@@ -15,6 +16,7 @@ interface MinesweeperState {
   width: number,
   height: number,
   mines: number,
+  difficulty: DifficultyLevels,
   flags: number,
   win: boolean,
   lose: boolean,
@@ -26,6 +28,7 @@ const initialState: MinesweeperState = {
   width: 0,
   height: 0,
   mines: 0,
+  difficulty: DifficultyLevels.beginner,
   flags: 0,
   win: false,
   lose: false,
@@ -36,7 +39,7 @@ const slice = createSlice({
   name: 'minesweeper',
   initialState,
   reducers: {
-    generateField: (state, { payload: { width, height, mines }}: PayloadAction<{ width: number, height: number, mines: number }>) => {
+    generateField: (state, { payload: { width, height, mines, difficulty }}: PayloadAction<{ width: number, height: number, mines: number, difficulty: DifficultyLevels }>) => {
       const field: Array<Array<Cell>> = [];
       for (let i = 0; i < height; i++) {
         const line = [];
@@ -59,10 +62,10 @@ const slice = createSlice({
       const filled = state.field.map((row) => row.map((cell) => {
         if (cell.x === x && cell.y === y) {
           cell.value = 0;
-        } else if (minesArr[counter]) {
-          cell.value = 9;
+        } else {
+          cell.value = minesArr[counter] ? 9 : 0;
+          counter++;
         }
-        counter++;
         return cell;
       }));
       filled.forEach((row) => row.forEach((cell) => {
@@ -177,6 +180,6 @@ export const flagsNumber = (state: RootState) => state.minesweeper.flags;
 export const isLose = (state: RootState) => state.minesweeper.lose;
 export const isWin = (state: RootState) => state.minesweeper.win;
 export const difficulty = (state: RootState) => {
-  const { height, width, mines } = state.minesweeper;
-  return { height, width, mines };
+  const { height, width, mines, difficulty } = state.minesweeper;
+  return { height, width, mines, difficulty };
 };

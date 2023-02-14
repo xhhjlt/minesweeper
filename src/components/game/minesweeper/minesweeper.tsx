@@ -1,11 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Box, Typography, IconButton, Stack, useTheme } from "@mui/material";
+import { Box, Typography, IconButton, Stack, useTheme, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "app/hooks";
 import { Cell, changeFlag, clearGameStats, difficulty, fillField, flagsNumber, gameField, generateField, isLose, isWin, openAround, openCell } from "./minesweeperSlice";
 import { Mood, MoodBad, SentimentSatisfiedAlt } from "@mui/icons-material";
 import { finishGame, isGameActive, startGame } from "../container/containerSlice";
 import { numberColor } from "./constants";
 import { useEffect, useState } from "react";
+import { addNewRecord, checkTime, closeModal, isModalOpened } from "components/leaderboard/leaderboardSlice";
 
 export default function Minesweeper() {
   const theme = useTheme();
@@ -19,6 +20,8 @@ export default function Minesweeper() {
   const [time, setTime] = useState(0);
   const [startTime, setStartTime] = useState(Date.now());
   const [firstClick, setFirstClick] = useState(true);
+  const [playerName, setPlayerName] = useState('');
+  const openModal = useAppSelector(isModalOpened);
 
   useEffect(() => {
     setTimeout(() => {
@@ -31,8 +34,11 @@ export default function Minesweeper() {
   }, [lose])
 
   useEffect(() => {
-    if (win) dispatch(finishGame());
-  }, [win])
+    if (win && !lose) {
+      dispatch(checkTime({ difficulty: currentDifficulty.difficulty, time }));
+      dispatch(finishGame());
+    }
+  }, [win, lose])
 
   const clickHandler = (e: React.PointerEvent<HTMLDivElement>, cell: Cell) => {
     if (!isActive) return;
@@ -45,6 +51,13 @@ export default function Minesweeper() {
     } else if (e.button === 1) {
       dispatch(openAround({ ...cell }));
     }
+  };
+
+  const handleCloseModal = () => {
+    console.log('open modal');
+    dispatch(addNewRecord({ difficulty: currentDifficulty.difficulty, name: playerName, time }));
+    dispatch(closeModal());
+    console.log('close modal');
   };
 
   const restart = () => {
@@ -67,7 +80,7 @@ export default function Minesweeper() {
       <Stack direction="row" justifyContent="space-evenly" alignItems="center" maxWidth="100vw" m="auto">
         <Typography textAlign="left" minWidth={35} variant="h6">{currentDifficulty.mines - flags}</Typography>
         <IconButton onClick={restart}>
-          {win ? <Mood color="success" /> : lose ? <MoodBad color="error" /> : <SentimentSatisfiedAlt color="primary" />}
+          {win && !lose ? <Mood color="success" /> : lose ? <MoodBad color="error" /> : <SentimentSatisfiedAlt color="primary" />}
         </IconButton>
         <Typography textAlign="right" minWidth={35} variant="h6">{time}</Typography>
       </Stack>
@@ -98,6 +111,28 @@ export default function Minesweeper() {
           </Stack>
         ))}
       </Stack>
+      <Dialog open={openModal} onClose={handleCloseModal}>
+        <DialogTitle>Вы поставили новый рекорд!</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Введите ваше имя:
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="имя"
+            type="name"
+            fullWidth
+            variant="standard"
+            value={playerName}
+            onChange={(e) => setPlayerName(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseModal}>Ok</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

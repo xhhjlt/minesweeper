@@ -16,9 +16,9 @@ export default function GameSettings() {
     e.preventDefault();
     dispatch(clearGameStats())
     if (difficulty === DifficultyLevels.custom) {
-      dispatch(generateField({ height, width, mines }));
+      dispatch(generateField({ height, width, mines, difficulty }));
     } else {
-      dispatch(generateField(levels[difficulty]));
+      dispatch(generateField({ ...levels[difficulty], difficulty }));
     }
     dispatch(startGame());
     dispatch(openGame());
