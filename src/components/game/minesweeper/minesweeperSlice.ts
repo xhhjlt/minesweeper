@@ -52,6 +52,7 @@ const slice = createSlice({
       state.mines = mines;
       state.height = height;
       state.width = width;
+      state.difficulty = difficulty;
     },
     fillField: (state, { payload: { x, y }}: PayloadAction<{ x: number, y: number }>) => {
       const minesArr = shuffle([

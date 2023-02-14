@@ -6,7 +6,7 @@ import { Mood, MoodBad, SentimentSatisfiedAlt } from "@mui/icons-material";
 import { finishGame, isGameActive, startGame } from "../container/containerSlice";
 import { numberColor } from "./constants";
 import { useEffect, useState } from "react";
-import { addNewRecord, checkTime, closeModal, isModalOpened } from "components/leaderboard/leaderboardSlice";
+import { addNewRecord, checkTime, isModalOpened } from "components/leaderboard/leaderboardSlice";
 
 export default function Minesweeper() {
   const theme = useTheme();
@@ -25,16 +25,16 @@ export default function Minesweeper() {
 
   useEffect(() => {
     setTimeout(() => {
-      if (isActive) setTime(Math.trunc((Date.now() - startTime)/1000));
+      if (!win && !lose) setTime(Math.trunc((Date.now() - startTime)/1000));
     }, 1000);
-  }, [time, isActive, startTime]);
+  }, [time, win, lose, startTime]);
 
   useEffect(() => {
     if (lose) dispatch(finishGame());
   }, [lose])
 
   useEffect(() => {
-    if (win && !lose) {
+    if (win && !lose && !firstClick) {
       dispatch(checkTime({ difficulty: currentDifficulty.difficulty, time }));
       dispatch(finishGame());
     }
@@ -54,10 +54,7 @@ export default function Minesweeper() {
   };
 
   const handleCloseModal = () => {
-    console.log('open modal');
     dispatch(addNewRecord({ difficulty: currentDifficulty.difficulty, name: playerName, time }));
-    dispatch(closeModal());
-    console.log('close modal');
   };
 
   const restart = () => {
@@ -104,7 +101,7 @@ export default function Minesweeper() {
                 </Typography>
                 ) : (
                 <Typography textAlign="center" fontWeight={1000} color="GrayText" sx={{userSelect: "none"}}>
-                  {cell.flag}
+                  {(lose && cell.value === 9) ? '💣' : (win && cell.value === 9) ? '🚩' : cell.flag }
                 </Typography>)}
               </Box>
             ))}

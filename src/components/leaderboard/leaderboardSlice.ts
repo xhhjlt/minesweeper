@@ -14,12 +14,17 @@ interface LeaderboardState {
   isNewRecord: boolean,
 };
 
-const initialState: LeaderboardState = {
-  [DifficultyLevels.beginner]: [{ name: 'lalala', time: 10}],
-  [DifficultyLevels.intermediate]: [],
-  [DifficultyLevels.expert]: [],
-  isNewRecord: false,
-};
+
+const leaderboardFromStorage = localStorage.getItem('leaderboard');
+
+const initialState: LeaderboardState = leaderboardFromStorage
+  ? JSON.parse(leaderboardFromStorage)
+  : {
+    [DifficultyLevels.beginner]: [],
+    [DifficultyLevels.intermediate]: [],
+    [DifficultyLevels.expert]: [],
+    isNewRecord: false,
+  };
 
 const slice = createSlice({
   name: 'leaderboard',
@@ -35,22 +40,23 @@ const slice = createSlice({
       }
     },
     addNewRecord: (state, { payload: { difficulty, time, name }}: PayloadAction<{ difficulty: DifficultyLevels, time: number, name: string }>) => {
-      console.log('dispatch 1');
       if (difficulty === DifficultyLevels.custom) return;
       const newArr = [...state[difficulty], { name, time }];
-      newArr.sort((a, b) => a.time - b.time).pop();
+      newArr.sort((a, b) => a.time - b.time);
+      if (newArr.length > 10) {
+        newArr.pop();
+      }
       state[difficulty] = newArr;
-      console.log('dispatch 1 end');
+      state.isNewRecord = false;
+      localStorage.setItem('leaderboard', JSON.stringify(state))
     },
     closeModal: (state) => {
-      console.log('dispatch 2');
       state.isNewRecord = false;
-      console.log('dispatch 2 end');
     }
   },
 });
 
-export const { checkTime, addNewRecord, closeModal } = slice.actions;
+export const { checkTime, addNewRecord } = slice.actions;
 export default slice.reducer;
 export const beginnerLeaders = (state: RootState) => state.leaderboard.beginner;
 export const intermediateLeaders = (state: RootState) => state.leaderboard.intermediate;
