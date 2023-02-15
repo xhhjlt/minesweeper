@@ -75,15 +75,15 @@ const slice = createSlice({
     },
     fillField: (state, { payload: { x, y }}: PayloadAction<{ x: number, y: number }>) => {
       const minesArr = shuffle([
-        ...Array(state.mines).fill(true),
-        ...Array(state.height * state.width - 1 - state.mines).fill(false)
+        ...Array(state.mines).fill(9),
+        ...Array(state.height * state.width - 1 - state.mines).fill(0)
       ]);
       let counter = 0;
       const filled = state.field.map((row) => row.map((cell) => {
         if (cell.x === x && cell.y === y) {
           cell.value = 0;
         } else {
-          cell.value = minesArr[counter] ? 9 : 0;
+          cell.value = minesArr[counter];
           counter++;
         }
         return cell;
