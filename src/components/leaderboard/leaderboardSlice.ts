@@ -31,7 +31,6 @@ const slice = createSlice({
   initialState,
   reducers: {
     checkTime: (state, { payload: { difficulty, time }}: PayloadAction<{ difficulty: DifficultyLevels, time: number }>) => {
-      console.log('check time ', difficulty);
       if (difficulty === DifficultyLevels.custom) return;
       if (state[difficulty].length < 10) {
         state.isNewRecord = true;
