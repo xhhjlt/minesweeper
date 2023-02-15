@@ -64,14 +64,9 @@ const slice = createSlice({
   initialState,
   reducers: {
     generateField: (state, { payload: { width, height, mines, difficulty }}: PayloadAction<{ width: number, height: number, mines: number, difficulty: DifficultyLevels }>) => {
-      const field: Array<Array<Cell>> = [];
-      for (let i = 0; i < height; i++) {
-        const line = [];
-        for (let j = 0; j < width; j++) {
-          line.push({ x: j, y: i, value: 0, opened: false, flag: '' })
-        }
-        field.push(line);
-      }
+      const field: Array<Array<Cell>> = Array(height).fill([])
+        .map((line, indexI) => Array(width).fill({})
+          .map((cell, indexJ) => ({ x: indexJ, y: indexI, value: 0, opened: false, flag: '' })));
       state.field = field;
       state.mines = mines;
       state.height = height;
