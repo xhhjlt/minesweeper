@@ -20,31 +20,24 @@ export default function Minesweeper() {
   const muted = useAppSelector(isMuted);
   const dispatch = useAppDispatch();
   const [time, setTime] = useState(0);
-  const [startTime, setStartTime] = useState(Date.now());
   const [firstClick, setFirstClick] = useState(true);
   const [playerName, setPlayerName] = useState('');
   const openModal = useAppSelector(isModalOpened);
   const [playAudioWin] = useSound(`${process.env.PUBLIC_URL}/win.mp3`, { volume: 0.4 });
   const [playAudioLose] = useSound(`${process.env.PUBLIC_URL}/lose.wav`, { volume: 0.4 });
-
-  useEffect(() => {
-    setTimeout(() => {
-      if (!win && !lose) setTime(Math.trunc((Date.now() - startTime)/1000));
-    }, 1000);
-  }, [time, win, lose, startTime]);
-
-  useEffect(() => {
-    if (lose) {
-      dispatch(finishGame());
-      if (!muted && !win) playAudioLose();
-    }
-  }, [lose])
+  const [timer, setTimer] = useState<NodeJS.Timer>();
 
   useEffect(() => {
     if (win && !lose && !firstClick) {
       dispatch(checkTime({ difficulty: currentDifficulty.difficulty, time }));
-      dispatch(finishGame());
       if (!muted) playAudioWin();
+      dispatch(finishGame());
+      clearInterval(timer);
+    }
+    if (lose) {
+      if (!muted && !win) playAudioLose();
+      dispatch(finishGame());
+      clearInterval(timer);
     }
   }, [win, lose])
 
@@ -54,6 +47,7 @@ export default function Minesweeper() {
       if (firstClick) {
         setFirstClick(false);
         dispatch(fillField({ ...cell }));
+        setTimer(setInterval(() => setTime((time) => time = time + 1), 1000));
       }
       dispatch(openCell({ ...cell }));
     } else if (e.button === 1) {
@@ -67,7 +61,6 @@ export default function Minesweeper() {
 
   const restart = () => {
     setTime(0);
-    setStartTime(Date.now());
     dispatch(clearGameStats())
     dispatch(generateField(currentDifficulty));
     setFirstClick(true);
