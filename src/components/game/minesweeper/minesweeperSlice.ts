@@ -23,6 +23,27 @@ interface MinesweeperState {
   cellsOpened: number,
 };
 
+
+const open = (baseX: number, baseY: number, state: MinesweeperState) => {
+  if (state.field[baseY][baseX].opened || state.field[baseY][baseX].flag === '🚩') return;
+  state.field[baseY][baseX].opened = true;
+  state.cellsOpened = state.cellsOpened + 1;
+  state.field[baseY][baseX].flag = '';
+  if (state.height * state.width - state.mines === state.cellsOpened) state.win = true;
+  if (state.field[baseY][baseX].value === 9) state.lose = true;
+  if (state.field[baseY][baseX].value !== 0) return;
+  for (let i = -1; i <= 1; i++) {
+    for (let j = -1; j <= 1; j++) {
+      const x = baseX + i;
+      const y = baseY + j;
+      if (x >=0 && x < state.width 
+        && y >=0 && y < state.height) {
+          open(x, y, state);
+      }
+    }
+  }
+};
+
 const initialState: MinesweeperState = {
   field: [],
   width: 0,
@@ -86,26 +107,7 @@ const slice = createSlice({
       state.field = filled;
     },
     openCell: (state, { payload: { x, y }}: PayloadAction<{ x: number, y: number }>) => {
-      const open = (baseX: number, baseY: number) => {
-        if (state.field[baseY][baseX].opened) return;
-        state.field[baseY][baseX].opened = true;
-        state.cellsOpened = state.cellsOpened + 1;
-        state.field[baseY][baseX].flag = '';
-        if (state.height * state.width - state.mines === state.cellsOpened) state.win = true;
-        if (state.field[baseY][baseX].value === 9) state.lose = true;
-        if (state.field[baseY][baseX].value !== 0) return;
-        for (let i = -1; i <= 1; i++) {
-          for (let j = -1; j <= 1; j++) {
-            const x = baseX + i;
-            const y = baseY + j;
-            if (x >=0 && x < state.width 
-              && y >=0 && y < state.height) {
-                open(x, y);
-            }
-          }
-        }
-      };
-      open(x,y);
+      open(x,y, state);
     },
     openAround: (state, { payload: { x, y }}: PayloadAction<{ x: number, y: number }>) => {
       if (!state.field[y][x].opened) return;
@@ -120,26 +122,6 @@ const slice = createSlice({
           }
         }
       }
-      const open = (baseX: number, baseY: number) => {
-        if (state.field[baseY][baseX].opened || state.field[baseY][baseX].flag === '🚩') return;
-        state.field[baseY][baseX].opened = true;
-        state.cellsOpened = state.cellsOpened + 1;
-        state.field[baseY][baseX].flag = '';
-        if (state.height * state.width - state.mines === state.cellsOpened) state.win = true;
-        if (state.field[baseY][baseX].value === 9) state.lose = true;
-        if (state.field[baseY][baseX].value !== 0) return;
-        for (let i = -1; i <= 1; i++) {
-          for (let j = -1; j <= 1; j++) {
-            const x = baseX + i;
-            const y = baseY + j;
-            if (x >=0 && x < state.width 
-              && y >=0 && y < state.height) {
-                open(x, y);
-            }
-          }
-        }
-      };
-      
       if (state.field[y][x].value === flags) {
         for (let i = -1; i <= 1; i++) {
           for (let j = -1; j <= 1; j++) {
@@ -147,7 +129,7 @@ const slice = createSlice({
             const yi = y + j;
             if (xi >=0 && xi < state.width 
               && yi >=0 && yi < state.height) {
-                open(xi, yi);
+                open(xi, yi, state);
             }
           }
         }
