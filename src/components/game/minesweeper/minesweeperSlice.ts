@@ -23,6 +23,18 @@ interface MinesweeperState {
   cellsOpened: number,
 };
 
+const around = (baseX: number, baseY: number, state: MinesweeperState, callback: (x: number, y: number) => void) => {
+  for (let i = -1; i <= 1; i++) {
+    for (let j = -1; j <= 1; j++) {
+      const x = baseX + i;
+      const y = baseY + j;
+      if (x >=0 && x < state.width 
+        && y >=0 && y < state.height) {
+          callback(x, y);
+      }
+    }
+  }
+}
 
 const open = (baseX: number, baseY: number, state: MinesweeperState) => {
   if (state.field[baseY][baseX].opened || state.field[baseY][baseX].flag === '🚩') return;
@@ -32,16 +44,7 @@ const open = (baseX: number, baseY: number, state: MinesweeperState) => {
   if (state.height * state.width - state.mines === state.cellsOpened) state.win = true;
   if (state.field[baseY][baseX].value === 9) state.lose = true;
   if (state.field[baseY][baseX].value !== 0) return;
-  for (let i = -1; i <= 1; i++) {
-    for (let j = -1; j <= 1; j++) {
-      const x = baseX + i;
-      const y = baseY + j;
-      if (x >=0 && x < state.width 
-        && y >=0 && y < state.height) {
-          open(x, y, state);
-      }
-    }
-  }
+  around(baseX, baseY, state, (x, y) => open( x, y, state));
 };
 
 const initialState: MinesweeperState = {
@@ -92,16 +95,9 @@ const slice = createSlice({
       }));
       filled.forEach((row) => row.forEach((cell) => {
         if (cell.value === 9) {
-          for (let i = -1; i <= 1; i++) {
-            for (let j = -1; j <= 1; j++) {
-              const x = cell.x + i;
-              const y = cell.y + j;
-              if (x >=0 && x < state.width 
-                && y >=0 && y < state.height) {
-                  if (filled[y][x].value !== 9) filled[y][x].value = filled[y][x].value + 1;
-              }
-            }
-          }
+          around(cell.x, cell.y, state, (x, y) => {
+            if (filled[y][x].value !== 9) filled[y][x].value = filled[y][x].value + 1;
+          })
         }
       }));
       state.field = filled;
@@ -112,27 +108,9 @@ const slice = createSlice({
     openAround: (state, { payload: { x, y }}: PayloadAction<{ x: number, y: number }>) => {
       if (!state.field[y][x].opened) return;
       let flags = 0;
-      for (let i = -1; i <= 1; i++) {
-        for (let j = -1; j <= 1; j++) {
-          const xi = x + i;
-          const yi = y + j;
-          if (xi >=0 && xi < state.width 
-            && yi >=0 && yi < state.height) {
-              if (state.field[yi][xi].flag === '🚩') flags++;
-          }
-        }
-      }
+      around(x, y, state, (x, y) => { if (state.field[y][x].flag === '🚩') flags++; })
       if (state.field[y][x].value === flags) {
-        for (let i = -1; i <= 1; i++) {
-          for (let j = -1; j <= 1; j++) {
-            const xi = x + i;
-            const yi = y + j;
-            if (xi >=0 && xi < state.width 
-              && yi >=0 && yi < state.height) {
-                open(xi, yi, state);
-            }
-          }
-        }
+        around(x, y, state, (x, y) => open( x, y, state));
       }
     },
     changeFlag: (state, { payload: { x, y }}: PayloadAction<{ x: number, y: number }>) => {
